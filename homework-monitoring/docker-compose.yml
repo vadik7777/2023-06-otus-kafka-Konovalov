@@ -1,0 +1,163 @@
+---
+version: '3.7'
+# https://docs.kafka-ui.provectus.io/configuration/complex-configuration-examples/kraft-mode-+-multiple-brokers
+services:
+  kafka-ui:
+    container_name: kafka-ui0
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 9091:8080
+    depends_on:
+      - kafka0
+      - kafka1
+      - kafka2
+    environment:
+      KAFKA_CLUSTERS_0_NAME: kafka0
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka0:29098,kafka1:29198,kafka2:29298
+      KAFKA_CLUSTERS_0_METRICS_PORT: 29099
+
+  kafka0:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka0
+    container_name: kafka0
+    ports:
+      - 29098:29098
+      - 29099:29099
+      - 29097:29097
+    environment:
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka0:9092,PLAINTEXT_HOST://192.168.56.200:29098'
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka0:29093,2@kafka1:29093,3@kafka2:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka0:9092,PLAINTEXT_HOST://kafka0:29098,CONTROLLER://kafka0:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_JMX_PORT: 29099
+      KAFKA_JMX_HOSTNAME: 192.168.56.200
+      EXTRA_ARGS: "-javaagent:/opt/kafka/prometheus/jmx_prometheus_javaagent-0.20.0.jar=29097:/opt/kafka/prometheus/kafka-2_0_0.yml"
+    volumes:
+      - /root/kafka/prometheus:/opt/kafka/prometheus
+
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka1
+    container_name: kafka1
+    ports:
+      - 29198:29198
+      - 29199:29199
+      - 29197:29197
+    environment:
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://192.168.56.200:29198'
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka0:29093,2@kafka1:29093,3@kafka2:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://kafka1:29198,CONTROLLER://kafka1:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_JMX_PORT: 29199
+      KAFKA_JMX_HOSTNAME: 192.168.56.200
+      EXTRA_ARGS: "-javaagent:/opt/kafka/prometheus/jmx_prometheus_javaagent-0.20.0.jar=29197:/opt/kafka/prometheus/kafka-2_0_0.yml"
+    volumes:
+      - /root/kafka/prometheus:/opt/kafka/prometheus
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    container_name: kafka2
+    ports:
+      - 29298:29298
+      - 29299:29299
+      - 29297:29297
+    environment:
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://192.168.56.200:29298'
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka0:29093,2@kafka1:29093,3@kafka2:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://kafka2:29298,CONTROLLER://kafka2:29093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_JMX_PORT: 29299
+      KAFKA_JMX_HOSTNAME: 192.168.56.200
+      EXTRA_ARGS: "-javaagent:/opt/kafka/prometheus/jmx_prometheus_javaagent-0.20.0.jar=29297:/opt/kafka/prometheus/kafka-2_0_0.yml"
+    volumes:
+      - /root/kafka/prometheus:/opt/kafka/prometheus
+
+  kafka_exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka_exporter
+    hostname: kafka_exporter
+    ports:
+      - "9308:9308"
+    command: "--kafka.server=kafka0:29098 --kafka.server=kafka1:29198 --kafka.server=kafka2:29298"
+    deploy:
+      mode: replicated
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+      replicas: 1
+      endpoint_mode: vip
+    depends_on:
+      - kafka0
+      - kafka1
+      - kafka2
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - /root/kafka/prometheus:/run/secrets
+    command: --config.file=/run/secrets/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention=168h
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4096M
+        reservations:
+          memory: 1024M
+      replicas: 1
+      endpoint_mode: vip
+      placement:
+        constraints:
+          - "node.labels.prometheus == true"
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    deploy:
+      mode: replicated
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+      replicas: 1
+      endpoint_mode: vip
+      placement:
+        constraints:
+          - "node.labels.grafana == true"
+
