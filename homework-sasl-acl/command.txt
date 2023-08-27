@@ -1,0 +1,3 @@
+docker exec -it --user root kafka0 bash
+kafka-topics --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/user3.properties
+kafka-topics --list --bootstrap-server kafka0:9098 --command-config /etc/kafka/secrets/admin.properties

@@ -1,0 +1,30 @@
+---
+version: '3.7'
+services:
+
+  kafka0:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka0
+    container_name: kafka0
+    ports:
+      - 29098:9098
+    environment:
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NODE_ID: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'BROKER'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'BROKER:SASL_PLAINTEXT,BROKER_HOST:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka0:29093'
+
+      KAFKA_LISTENERS: 'BROKER://:9098,BROKER_HOST://:29098,CONTROLLER://:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'BROKER://kafka0:9098,BROKER_HOST://localhost:29098'
+
+      KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
+      KAFKA_SASL_MECHANISM_CONTROLLER_PROTOCOL: 'PLAIN'
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAIN'
+      KAFKA_OPTS: '-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_jaas.conf'
+
+    volumes:
+      - ./private:/etc/kafka/secrets
+#      - /root/kafka/private:/etc/kafka/secrets
