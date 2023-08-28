@@ -23,6 +23,12 @@ services:
       KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
       KAFKA_SASL_MECHANISM_CONTROLLER_PROTOCOL: 'PLAIN'
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAIN'
+
+      KAFKA_AUTHORIZER_CLASS_NAME: 'org.apache.kafka.metadata.authorizer.StandardAuthorizer'
+      KAFKA_SUPER_USERS: "User:admin;User:controller"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'true'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
       KAFKA_OPTS: '-Djava.security.auth.login.config=/etc/kafka/secrets/kafka_jaas.conf'
 
     volumes:
