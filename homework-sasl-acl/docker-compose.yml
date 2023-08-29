@@ -7,7 +7,7 @@ services:
     hostname: kafka0
     container_name: kafka0
     ports:
-      - 29098:9098
+      - 29098:29098
     environment:
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
       KAFKA_NODE_ID: 1
