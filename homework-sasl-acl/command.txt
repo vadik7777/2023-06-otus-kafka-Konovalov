@@ -1,0 +1,48 @@
+-- Заходим в контейнер
+docker exec -it --user root kafka0 bash
+
+-- Доступ на порт 29098 разрешен
+kafka-topics --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/user3.properties
+
+-- Доступ на порт 9098 разрешен только пользователю broker
+kafka-topics --list --bootstrap-server kafka0:9098 --command-config /etc/kafka/secrets/broker.properties
+kafka-topics --list --bootstrap-server kafka0:9098 --command-config /etc/kafka/secrets/admin.properties
+
+-- Список правил
+kafka-acls --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/admin.properties
+
+-- Создаем топик
+kafka-topics --create --topic test --bootstrap-server kafka0:29098 --command-config /etc/kafka/secrets/admin.properties
+
+-- Пользователю user1 выдать права на запись в этот топик
+kafka-acls --bootstrap-server localhost:29098 --add --allow-principal User:user1 --operation Write --topic test --command-config /etc/kafka/secrets/admin.properties
+
+-- Пользователю use2 выдать права на чтение этого топика
+kafka-acls --bootstrap-server localhost:29098 --add --allow-principal User:user2 --operation Read --topic test --command-config /etc/kafka/secrets/admin.properties
+
+-- Получить список топиков
+- user1 - видит топик test
+kafka-topics --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/user1.properties
+- user2 - видит топик test
+kafka-topics --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/user2.properties
+- user3 - не видит топик test
+kafka-topics --list --bootstrap-server localhost:29098 --command-config /etc/kafka/secrets/user3.properties
+
+-- Записать сообщения в топик
+- user1 - работает
+kafka-console-producer --bootstrap-server localhost:29098 --topic test --producer.config /etc/kafka/secrets/user1.properties
+- user2 - org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [test]
+kafka-console-producer --bootstrap-server localhost:29098 --topic test --producer.config /etc/kafka/secrets/user2.properties
+- user3 - ошибка - org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [test]
+kafka-console-producer --bootstrap-server localhost:29098 --topic test --producer.config /etc/kafka/secrets/user3.properties
+
+- Прочитать сообщения из топика
+- user1 - org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [test]
+kafka-console-consumer --bootstrap-server localhost:29098 --topic test --consumer.config /etc/kafka/secrets/user1.properties -from-beginning
+- user2 - работает
+kafka-console-consumer --bootstrap-server localhost:29098 --topic test --consumer.config /etc/kafka/secrets/user2.properties -from-beginning
+- user3 - org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [test]
+kafka-console-consumer --bootstrap-server localhost:29098 --topic test --consumer.config /etc/kafka/secrets/user3.properties -from-beginning
+
+
+
