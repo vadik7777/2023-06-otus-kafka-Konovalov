@@ -34,6 +34,7 @@ allprojects {
         dependencies {
             imports {
                 mavenBom(BOM_COORDINATES)
+                mavenBom("io.projectreactor:reactor-bom:2022.0.7")
             }
             dependency("org.apache.kafka:kafka-clients:$kafkaClients")
         }
