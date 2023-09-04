@@ -1,6 +1,7 @@
 rootProject.name = "otusKafka"
 include("homework-producer-api")
 include("homework-consumer-api")
+include("homework-admin-api")
 
 pluginManagement {
     val dependencyManagement: String by settings
