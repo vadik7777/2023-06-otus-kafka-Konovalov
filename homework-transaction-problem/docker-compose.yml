@@ -1,0 +1,35 @@
+---
+version: '3.7'
+services:
+
+  kafka-ui:
+    container_name: kafka-ui0
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 9090:8080
+    depends_on:
+      - kafka0
+    environment:
+      KAFKA_CLUSTERS_0_NAME: kafka0
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 192.168.56.200:29098
+
+  kafka0:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka0
+    container_name: kafka0
+    ports:
+      - 29098:29098
+    environment:
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NODE_ID: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'BROKER'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'BROKER:PLAINTEXT,BROKER_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka0:29093'
+      KAFKA_LISTENERS: 'BROKER://:9098,BROKER_HOST://:29098,CONTROLLER://:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'BROKER://kafka0:9098,BROKER_HOST://192.168.56.200:29098'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
