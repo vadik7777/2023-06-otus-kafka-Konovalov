@@ -1,4 +1,4 @@
-package ru.otus.classwork.transaction;
+package ru.otus.homework.transaction;
 
 import java.util.Map;
 import java.util.UUID;
