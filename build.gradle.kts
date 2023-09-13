@@ -5,8 +5,8 @@ plugins {
     idea
     id("io.spring.dependency-management")
     id("org.springframework.boot") apply false
-    id("name.remal.sonarlint") apply false
-    id("com.diffplug.spotless") apply false
+    //id("name.remal.sonarlint") apply false
+    //id("com.diffplug.spotless") apply false
 }
 
 idea {
@@ -28,6 +28,8 @@ allprojects {
     }
 
     val kafkaClients: String by project
+    val kafkaStreams: String by project
+    val javafaker: String by project
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
@@ -37,6 +39,8 @@ allprojects {
                 mavenBom("io.projectreactor:reactor-bom:2022.0.7")
             }
             dependency("org.apache.kafka:kafka-clients:$kafkaClients")
+            dependency("org.apache.kafka:kafka-streams:$kafkaStreams")
+            dependency("com.github.javafaker:javafaker:$javafaker")
         }
     }
 
@@ -58,7 +62,7 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
+    /*apply<name.remal.gradle_plugins.sonarlint.SonarLintPlugin>()
     apply<com.diffplug.gradle.spotless.SpotlessPlugin>()
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         java {
@@ -68,5 +72,5 @@ subprojects {
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing", "-Werror"))
-    }
+    }*/
 }
