@@ -3,6 +3,7 @@ include("homework-producer-api")
 include("homework-consumer-api")
 include("homework-admin-api")
 include("homework-transaction-problem")
+include("homework-transaction")
 
 pluginManagement {
     val dependencyManagement: String by settings
