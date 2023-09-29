@@ -39,7 +39,8 @@ out
 /.idea/
 
 #Scala
-/classwork-akka_akka_streams/project/
-/classwork-akka_akka_streams/target/
+target/
+/*/project/
+/*/target/
 null/
 .bsp
