@@ -6,6 +6,7 @@ include("classwork-transaction")
 include("homework-transaction")
 include("classwork-kafka-streams")
 include("homework-kafka-streams")
+include("classwork-kafka-spring")
 
 pluginManagement {
     val dependencyManagement: String by settings
