@@ -1,0 +1,47 @@
+-- Запускаем контейнеры
+docker compose up -d
+
+-- Создаем топики
+docker exec -it --user root kafka0 bash
+kafka-topics --create --bootstrap-server kafka0:9098 --partitions 1 --topic local-connect-config --config cleanup.policy=compact
+kafka-topics --create --bootstrap-server kafka0:9098 --partitions 1 --topic local-connect-offsets --config cleanup.policy=compact
+kafka-topics --create --bootstrap-server kafka0:9098 --partitions 1 --topic local-connect-status --config cleanup.policy=compact
+exit
+
+-- Перезапускаем кафка коннект
+docker compose up -d
+
+-- Проверяем присутствие debezium плагина
+curl http://localhost:29097/connector-plugins
+
+-- Создаём коннектор debezium-connector
+curl -X POST --data-binary "@debezium-connector.json" -H "Content-Type: application/json" http://localhost:29097/connectors
+
+-- Проверяем присутствие коннектора debezium-connector
+curl http://localhost:29097/connectors
+curl http://localhost:29097/connectors/debezium-connector
+
+-- Проверяем оффсет топика
+docker exec -it --user root kafka0 bash
+kafka-get-offsets --topic postgres.inventory.customers --bootstrap-server kafka0:9098
+exit
+
+-- Обновляем записи в таблице
+docker exec -ti postgres-debezium psql -U postgres
+INSERT INTO postgres.inventory.customers (id, first_name, last_name, email) VALUES (1005, 'Ann', 'Petrova', 'email');
+UPDATE postgres.inventory.customers set email = 'email1' WHERE id = 1005;
+DELETE FROM postgres.inventory.customers WHERE id = 1002;
+exit
+
+-- Проверяем оффсет топика
+docker exec -it --user root kafka0 bash
+kafka-get-offsets --topic postgres.inventory.customers --bootstrap-server kafka0:9098
+exit
+
+-- Удаляем коннектор
+curl -X DELETE http://localhost:29097/connectors/debezium-connector
+
+-- Останавливаем и удаляем контейнеры
+docker compose stop
+docker container prune -f
+docker volume prune -f
