@@ -7,6 +7,8 @@ include("homework-transaction")
 include("classwork-kafka-streams")
 include("homework-kafka-streams")
 include("classwork-kafka-spring")
+include("classwork-schemaregistry:KafkaAvroSchemaRegistryCompleted")
+include("classwork-schemaregistry:KafkaAvroSchemaRegistryTODO")
 
 pluginManagement {
     val dependencyManagement: String by settings
