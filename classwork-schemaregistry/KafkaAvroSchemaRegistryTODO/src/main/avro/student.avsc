@@ -1,0 +1,45 @@
+{
+  "type": "record",
+  "name": "Student",
+  "namespace": "ru.otus.kafka",
+  "fields": [
+    {
+      "name": "Id",
+      "type": ["null", "int"], "default": null
+    },
+    {
+      "name": "Name",
+      "type": ["null", "string"], "default": null
+    },
+    {
+      "name": "Surname",
+      "type": ["null", "string"], "default": null
+    },
+    {
+      "name": "email",
+      "type": ["null", "string"], "default": null
+    },
+    {
+      "name": "location",
+      "type": ["null", "string"], "default": null
+    },
+    {
+      "name": "rating_value",
+      "type": ["null", {
+        "type": "enum",
+        "name": "Rating",
+        "symbols": ["EXCELLENT", "GOOD", "AVERAGE"]
+      }], "default": null
+    },
+    {
+      "name": "Courses",
+      "type": ["null", {
+        "type": "array",
+        "items": {
+          "name": "CourseTitle",
+          "type": "string"
+        }
+      }], "default": null
+      }
+  ]
+}
